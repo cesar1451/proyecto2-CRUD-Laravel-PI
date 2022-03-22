@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('cantidad')->unsigned();   
             $table->string('tipo', 50)->nullable(false);            
             $table->string('descripcion', 100)->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
