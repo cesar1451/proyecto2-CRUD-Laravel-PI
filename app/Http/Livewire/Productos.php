@@ -5,12 +5,24 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Producto;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Enum;
 
 class Productos extends Component
 {
     //Definición de variables
     public $productos, $modal = false;
     public $id_producto, $codigo, $precio, $marca, $color, $cantidad, $tipo, $descripcion, $user_id;    
+
+    //Reglas de validación
+    protected $rules = [
+        'codigo' => 'required|min:5|max:10',
+        'precio' => 'required',
+        'marca' => 'required|max:50',
+        'color' => 'required|max:50',
+        'cantidad' => 'required|min:0',
+        'tipo' => 'required|max:50',
+        'descripcion' => 'min:0|max:100',
+    ];
 
     public function render()
     {        
@@ -47,8 +59,8 @@ class Productos extends Component
     }
 
     public function guardar()
-    {
-        $re
+    {      
+        $validateData = $this->validate();
         Producto::updateOrCreate(['id'=>$this->id_producto],
         [                 
             'codigo' => $this->codigo,
@@ -69,10 +81,8 @@ class Productos extends Component
 
     public function editar($id)
     {
-        $producto = Producto::findOrFail($id);
-        $producto->
-        Validator::make($data, $rules, $messages);
-        
+        $producto = Producto::findOrFail($id);        
+        $this->validateOnly($producto);
         $this->id_producto = $id;   
         $this->codigo = $producto->codigo;
         $this->precio = $producto->precio;    
@@ -82,6 +92,7 @@ class Productos extends Component
         $this->tipo = $producto->tipo;
         $this->descripcion = $producto->descripcion;
         $this->user_id = $producto->user_id;
+        $validateData = $this->validate();
         $this->abrirModal();
     }
 
@@ -89,21 +100,6 @@ class Productos extends Component
     {
         Producto::find($id)->delete();
         session()->flash('message', 'Registro eliminado correctamente');
-    }
-
-    public function rules()
-    {
-        private $reglasValidacion = [
-            'codigo' => 'required|regex:/[0-9]{5,10}',
-            'precio' => 'required',
-            'marca' => 'required|max:50',
-            'color' => 'required|max:50',
-            'cantidad' => 'required|min:0',
-            'tipo' => 'required|max:50',
-            'descripcion' => 'null|min:0|max:100',
-        ];
-
-        return $reglasValidacion;
-    }
+    }   
 
 }
